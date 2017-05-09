@@ -1,0 +1,67 @@
+{% block content %}
+<!DOCTYPE html>
+<html ng-app = "networkAnalyzer">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+		<script src="http://maps.googleapis.com/maps/api/js"></script>
+        <script async defer
+                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKK8lh9l9TDfumALLS6Ko3vJr9addjfQs&callback=initMap">
+        </script>
+		<div align="center"><h3>Here are the locations</h3></div>
+		<script>
+			var myData = {{ data|safe }};
+			console.log(myData);
+
+			function initialize(){
+
+				var mapProp = {
+				  center:new google.maps.LatLng(myData[0].Lat, myData[0].Long),
+				  zoom:3,
+				  mapTypeId:google.maps.MapTypeId.ROADMAP
+				};
+				var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
+				//var map = new google.maps.Map({position:document.getElementById("googleMap"),map:mapProp,icon: 'brown_markerA.png'});
+				for(i = 0; i < myData.length; i++){
+				  var data = myData[i];
+				  var marker = new google.maps.Marker({position:new google.maps.LatLng(data.Lat,data.Long)});
+				  marker.setMap(map);
+				}
+			}
+			google.maps.event.addDomListener(window, 'load', initialize);
+		</script>
+	</head>
+	<body ng-controller = "appCtrl">
+		<div class="row">
+            <div class = "col-sm-1"></div>
+			<div class="col-sm-4">
+				<p><a href="/findAllIPs?filename={{ filename|safe }}">Show all IP Addressess</a></p>
+				<p><a href="/findBLAccessingIPs?filename={{ filename|safe }}">Show IP Addressess accessing Black Listed Sites</a></p>
+				<p><a href="/findDownloads?filename={{ filename|safe }}">Show IP Addressess Downloading from Illegal Sites</a></p>
+                    <script>
+                   var myData = {{data|safe}};
+                   if({{ clicked|safe }}){
+                        for(i=0;i<myData.length;i++){
+                            var r = '<h3>&nbsp&nbspIP:&nbsp&nbsp'+myData[i].IP+'</h3><br>';
+                            var s = '<h4>&nbsp&nbspCity:&nbsp&nbsp'+myData[i].City+'</h4><br>';
+                            var t = '<h4>&nbsp&nbspCountry:&nbsp&nbsp'+myData[i].Country+'</h4><br>';
+                        document.write(r);
+                        document.write(s);
+                        document.write(t);
+                        }
+                   }
+                </script>
+			</div>
+
+			<div class="col-sm-4">
+				<div  id="googleMap" style = "width: 700px; height: 500px"></div>
+			</div>
+		</div>
+	</body>
+</html>
+{% endblock %}
+
+
